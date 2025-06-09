@@ -3,7 +3,7 @@ name = "databricksaihackathon"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "==3.12.3"
+requires-python = "==3.10.12"
 dependencies = [
     "databricks-agents>=0.22.1",
     "mlflow[databricks]>=2.22.1",
