@@ -103,8 +103,8 @@ class PydanticChatAgent(ChatAgent):
         async def extract_map_pins(ctx: RunContext[Memory]) -> MapState:
             pins = self.map_pin_extractor.run_sync(
                 user_prompt="Extract map pins from the Genie response",
-                deps=ctx.deps.genie_response,
-            )
+                deps=ctx.deps,
+            ).output
             return pins
 
     @mlflow.trace(span_type=SpanType.AGENT)
