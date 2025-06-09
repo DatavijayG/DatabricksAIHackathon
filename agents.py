@@ -14,7 +14,9 @@ from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
 
 BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
-DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN")
+DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN") or None
+
+os.environ.get("DATABRICKS_TOKEN")
 
 PROVIDER = OpenAIProvider(
     base_url=BASE_URL,
@@ -66,7 +68,7 @@ class PydanticChatAgent(ChatAgent):
         last_message = messages[-1]
         user_prompt = last_message.content
 
-        result = self.supervisor.run_sync(user_prompt=user_prompt)
+        result = await self.supervisor.run(user_prompt=user_prompt)
 
         response = ChatAgentResponse(
             messages=[
