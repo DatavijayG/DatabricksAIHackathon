@@ -13,6 +13,10 @@ from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
 
+import nest_asyncio
+
+BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
+MODEL_NAME = "databricks-meta-llama-3-3-70b-instruct"
 
 @dataclass
 class MapPin:
@@ -31,14 +35,10 @@ class PydanticChatAgent(ChatAgent):
 
     def __init__(self, databricks_token: str):
 
-        BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
-
         PROVIDER = OpenAIProvider(
             base_url=BASE_URL,
             api_key=databricks_token,
         )
-
-        MODEL_NAME = "databricks-meta-llama-3-3-70b-instruct"
 
         MODEL = OpenAIModel(model_name=MODEL_NAME, provider=PROVIDER)
 
@@ -66,6 +66,8 @@ class PydanticChatAgent(ChatAgent):
         last_message = messages[-1]
         user_prompt = last_message.content
 
+        nest_asyncio.apply()
+
         result = self.supervisor.run_sync(user_prompt=user_prompt)
 
         response = ChatAgentResponse(
@@ -87,3 +89,6 @@ class PydanticChatAgent(ChatAgent):
         )
 
         return response
+
+AGENT = PydanticChatAgent(databricks_token=os.environ["DATABRICKS_TOKEN"])
+mlflow.models.set_model(AGENT)

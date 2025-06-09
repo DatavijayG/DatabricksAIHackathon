@@ -2,6 +2,7 @@
 # MAGIC %pip install "databricks-agents>=0.22.1"
 # MAGIC %pip install "mlflow[databricks]>=2.22.1"
 # MAGIC %pip install "pydantic-ai>=0.2.16"
+# MAGIC %pip install "uv"
 
 # COMMAND ----------
 
@@ -13,32 +14,61 @@ import nest_asyncio
 nest_asyncio.apply()
 
 # COMMAND ----------
-from mlflow.types.agent import ChatAgentMessage
-import agents
+
 import os
-
-def main():
-    a = agents.PydanticChatAgent(os.environ["DATABRICKS_TOKEN"])
-    p = a.predict(
-        messages=[
-            ChatAgentMessage(
-                role="user",
-                content="What is the capital of France?",
-            )
-        ]
-    )
-
-    print(p)
-
-
-if __name__ == "__main__":
-    main()
-
-
+os.environ["DATABRICKS_TOKEN"] = dbutils.secrets.get("Secrets", "DATABRICKS_TOKEN")
 
 # COMMAND ----------
 
-main()
+import mlflow
+from agents import MODEL_NAME
+from mlflow import set_registry_uri
+from mlflow.models.resources import DatabricksServingEndpoint
+
+set_registry_uri("databricks-uc")
+
+with mlflow.start_run():
+    logged_agent_info = mlflow.pyfunc.log_model(
+        artifact_path="agents",
+        python_model="agents.py",
+        pip_requirements=[
+            "databricks-agents>=0.22.1",
+            "mlflow[databricks]>=2.22.1",
+            "pydantic-ai>=0.2.16",
+            "nest-asyncio"
+        ],
+        resources=[DatabricksServingEndpoint(endpoint_name=MODEL_NAME)],
+        registered_model_name="silver.default.supervisor",
+        input_example={
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "What is the capital of France?",
+                }
+            ]
+        },
+    )
+
+# COMMAND ----------
+
+mlflow.models.predict(
+    model_uri=f"runs:/{logged_agent_info.run_id}/agents",
+    input_data={
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "What is the capital of France?",
+                }
+            ]
+        },
+    env_manager="uv",
+)
+
+# COMMAND ----------
+
+from databricks import agents
+
+agents.deploy("silver.default.supervisor", logged_agent_info.registered_model_version, tags={"endpointSource": "docs"})
 
 # COMMAND ----------
 
