@@ -43,8 +43,13 @@ class Memory:
     genie_response: str
 
 
+@dataclass
+class SupervisorOutput:
+    output: str
+    map_state: MapState | None
+
 class PydanticChatAgent(ChatAgent):
-    supervisor: Agent
+
     api_key: str
 
     def __init__(self, databricks_token: str):
@@ -60,7 +65,7 @@ class PydanticChatAgent(ChatAgent):
         self.supervisor = Agent(
             model=MODEL,
             model_settings=ModelSettings(temperature=0.0),
-            output_type=str,
+            output_type=SupervisorOutput,
             deps_type=Memory,
             retries=3,
         )
@@ -118,23 +123,18 @@ class PydanticChatAgent(ChatAgent):
 
         nest_asyncio.apply()
 
-        result = self.supervisor.run_sync(user_prompt=user_prompt)
+        initial_memory = Memory(genie_response="")
+
+        result = self.supervisor.run_sync(user_prompt=user_prompt, deps=initial_memory)
 
         response = ChatAgentResponse(
             messages=[
                 ChatAgentMessage(
-                    role="assistant", content=result.output, id=str(uuid.uuid4())
+                    role="assistant", content=result.output.output, id=str(uuid.uuid4())
                 )
             ],
             custom_outputs={
-                "map_state": MapState(
-                    pins=[
-                        MapPin(name="Eiffel Tower", latitude=48.8584, longitude=2.2945),
-                        MapPin(
-                            name="Louvre Museum", latitude=48.8606, longitude=2.3376
-                        ),
-                    ]
-                )
+                "map_state": result.output.map_state,
             },
         )
 
