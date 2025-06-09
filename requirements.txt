@@ -185,9 +185,7 @@ databricks-agents==0.22.1 \
     # via databricksaihackathon
 databricks-connect==16.1.5 \
     --hash=sha256:41f6a73c941d43fcfea2124d8f7a59225a77ce3f9a28646ad6c5dc3088c53ec8
-    # via
-    #   databricks-agents
-    #   databricksaihackathon
+    # via databricks-agents
 databricks-sdk==0.56.0 \
     --hash=sha256:0b0036a3b48b59a70f07968658379ceecd47a7cd55646d519fe1a1c3cbc60c02 \
     --hash=sha256:3d701eba806f07a0203f97634789195495a1104f5061d2d7b76dc1669fe3c20c
