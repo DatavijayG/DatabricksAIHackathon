@@ -8,4 +8,5 @@ dependencies = [
     "databricks-agents>=0.22.1",
     "mlflow[databricks]>=2.22.1",
     "pydantic-ai>=0.2.16",
+    "uv>=0.7.12",
 ]
