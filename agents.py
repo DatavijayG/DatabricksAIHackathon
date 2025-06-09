@@ -45,7 +45,6 @@ class PydanticChatAgent(ChatAgent):
         self.supervisor = Agent(
             model=MODEL,
             model_settings=ModelSettings(temperature=0.0),
-            # deps_type
             output_type=str,
             retries=3,
         )
