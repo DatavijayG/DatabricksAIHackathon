@@ -40,7 +40,7 @@ class MapState:
 
 @dataclass
 class Memory:
-    pass
+    genie_response: str
 
 
 class PydanticChatAgent(ChatAgent):
@@ -48,7 +48,6 @@ class PydanticChatAgent(ChatAgent):
     api_key: str
 
     def __init__(self, databricks_token: str):
-
         api_key = databricks_token
 
         PROVIDER = OpenAIProvider(
@@ -68,23 +67,46 @@ class PydanticChatAgent(ChatAgent):
 
         @self.supervisor.tool
         async def query_genie(ctx: RunContext[Memory], inquiry: str) -> str:
-
             w = WorkspaceClient(host=HOST, token=api_key)
 
-            space_id="01f0454e56621eba8a7c7244630a8f70"
+            space_id = "01f0454e56621eba8a7c7244630a8f70"
 
-            genie_message=w.genie.start_conversation_and_wait(space_id=space_id, content=inquiry)
+            genie_message = w.genie.start_conversation_and_wait(
+                space_id=space_id, content=inquiry
+            )
 
             if genie_message.attachments:
                 first_attachment_id = genie_message.attachments[0].attachment_id
                 if first_attachment_id:
-                    result = w.genie.get_message_query_result_by_attachment(space_id=space_id, conversation_id=genie_message.conversation_id, message_id=genie_message.message_id, attachment_id=first_attachment_id)
+                    result = w.genie.get_message_query_result_by_attachment(
+                        space_id=space_id,
+                        conversation_id=genie_message.conversation_id,
+                        message_id=genie_message.message_id,
+                        attachment_id=first_attachment_id,
+                    )
+                    ctx.deps.genie_response = str(result)
                     return str(result)
                 else:
                     return "Genie response does not contain an attachment."
             else:
                 return "Genie response does not contain any attachments."
-            
+
+        self.map_pin_extractor = Agent(
+            model=MODEL,
+            model_settings=ModelSettings(temperature=0.0),
+            output_type=MapState,
+            deps_type=Memory,
+            retries=3,
+        )
+
+        @self.supervisor.tool
+        async def extract_map_pins(ctx: RunContext[Memory]) -> MapState:
+            pins = self.map_pin_extractor.run_sync(
+                user_prompt="Extract map pins from the Genie response",
+                deps=ctx.deps.genie_response,
+            )
+            return pins
+
     @mlflow.trace(span_type=SpanType.AGENT)
     def predict(
         self,

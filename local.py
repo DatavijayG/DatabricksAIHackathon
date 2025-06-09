@@ -8,7 +8,7 @@ def main():
         messages=[
             ChatAgentMessage(
                 role="user",
-                content="What is the capital of France?",
+                content="Can you ask Genie how many hotels are pet friendly and where they are located?",
             )
         ]
     )
