@@ -68,7 +68,7 @@ class PydanticChatAgent(ChatAgent):
         last_message = messages[-1]
         user_prompt = last_message.content
 
-        result = await self.supervisor.run(user_prompt=user_prompt)
+        result = self.supervisor.run_sync(user_prompt=user_prompt)
 
         response = ChatAgentResponse(
             messages=[
