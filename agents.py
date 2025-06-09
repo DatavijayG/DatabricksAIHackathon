@@ -16,10 +16,16 @@ from pydantic_ai.settings import ModelSettings
 BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
 DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN")
 
-PROVIDER = OpenAIProvider(
-    base_url=BASE_URL,
-    api_key=DATABRICKS_TOKEN,
-)
+if not DATABRICKS_TOKEN:
+    PROVIDER = OpenAIProvider(
+        base_url=BASE_URL,
+        api_key=DATABRICKS_TOKEN,
+    )
+else:
+    PROVIDER = OpenAIProvider(
+        base_url=BASE_URL,
+    )
+
 
 MODEL_NAME = "databricks-meta-llama-3-3-70b-instruct"
 
