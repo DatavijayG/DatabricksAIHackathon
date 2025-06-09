@@ -1,16 +1,17 @@
 import os
+import uuid
+from dataclasses import dataclass
+from typing import Any
 
 import mlflow
 from mlflow.entities import SpanType
+from mlflow.models import set_model
 from mlflow.pyfunc.model import ChatAgent
 from mlflow.types.agent import ChatAgentMessage, ChatAgentResponse, ChatContext
 from pydantic_ai.agent import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
-from dataclasses import dataclass
-from mlflow.models import set_model
-from typing import Any
 
 BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
 DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN")
@@ -23,6 +24,7 @@ PROVIDER = OpenAIProvider(
 MODEL_NAME = "databricks-meta-llama-3-3-70b-instruct"
 
 MODEL = OpenAIModel(model_name=MODEL_NAME, provider=PROVIDER)
+
 
 @dataclass
 class MapPin:
@@ -86,6 +88,7 @@ class PydanticChatAgent(ChatAgent):
         )
 
         return response
+
 
 # Set model for logging or interactive testing
 AGENT = PydanticChatAgent()
