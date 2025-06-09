@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = "==3.10.12"
 dependencies = [
     "databricks-agents>=0.22.1",
+    "databricks-connect<=16.1.5",
     "mlflow[databricks]>=2.22.1",
     "pydantic-ai>=0.2.16",
     "uv>=0.7.12",
