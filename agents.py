@@ -13,18 +13,6 @@ from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
 
-BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
-DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN")
-
-PROVIDER = OpenAIProvider(
-    base_url=BASE_URL,
-    api_key=DATABRICKS_TOKEN,
-)
-
-MODEL_NAME = "databricks-meta-llama-3-3-70b-instruct"
-
-MODEL = OpenAIModel(model_name=MODEL_NAME, provider=PROVIDER)
-
 
 @dataclass
 class MapPin:
@@ -41,7 +29,19 @@ class MapState:
 class PydanticChatAgent(ChatAgent):
     supervisor: Agent
 
-    def __init__(self):
+    def __init__(self, databricks_token: str):
+
+        BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
+
+        PROVIDER = OpenAIProvider(
+            base_url=BASE_URL,
+            api_key=databricks_token,
+        )
+
+        MODEL_NAME = "databricks-meta-llama-3-3-70b-instruct"
+
+        MODEL = OpenAIModel(model_name=MODEL_NAME, provider=PROVIDER)
+
         self.supervisor = Agent(
             model=MODEL,
             model_settings=ModelSettings(temperature=0.0),
@@ -87,8 +87,3 @@ class PydanticChatAgent(ChatAgent):
         )
 
         return response
-
-
-# Set model for logging or interactive testing
-AGENT = PydanticChatAgent()
-set_model(AGENT)

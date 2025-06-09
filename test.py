@@ -13,13 +13,13 @@ import nest_asyncio
 nest_asyncio.apply()
 
 # COMMAND ----------
-
 from mlflow.types.agent import ChatAgentMessage
-
 import agents
+import os
 
 def main():
-    p = agents.AGENT.predict(
+    a = agents.PydanticChatAgent(os.environ["DATABRICKS_TOKEN"])
+    p = a.predict(
         messages=[
             ChatAgentMessage(
                 role="user",
@@ -29,6 +29,11 @@ def main():
     )
 
     print(p)
+
+
+if __name__ == "__main__":
+    main()
+
 
 
 # COMMAND ----------

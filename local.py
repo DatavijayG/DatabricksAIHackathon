@@ -1,10 +1,10 @@
 from mlflow.types.agent import ChatAgentMessage
-
-from agents import AGENT
-
+import agents
+import os
 
 def main():
-    p = AGENT.predict(
+    a = agents.PydanticChatAgent(os.environ["DATABRICKS_TOKEN"])
+    p = a.predict(
         messages=[
             ChatAgentMessage(
                 role="user",
@@ -14,6 +14,7 @@ def main():
     )
 
     print(p)
+
 
 if __name__ == "__main__":
     main()
