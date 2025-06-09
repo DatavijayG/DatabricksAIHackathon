@@ -35,7 +35,8 @@ with mlflow.start_run():
             "databricks-agents>=0.22.1",
             "mlflow[databricks]>=2.22.1",
             "pydantic-ai>=0.2.16",
-            "nest-asyncio"
+            "nest-asyncio",
+            "databricks-sdk"
         ],
         resources=[DatabricksServingEndpoint(endpoint_name=MODEL_NAME)],
         registered_model_name="silver.default.supervisor",

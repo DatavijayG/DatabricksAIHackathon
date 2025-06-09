@@ -1,22 +1,30 @@
 import os
 import uuid
 from dataclasses import dataclass
+from textwrap import dedent
 from typing import Any
 
 import mlflow
+import mlflow.models
+import nest_asyncio
 from mlflow.entities import SpanType
-from mlflow.models import set_model
 from mlflow.pyfunc.model import ChatAgent
 from mlflow.types.agent import ChatAgentMessage, ChatAgentResponse, ChatContext
-from pydantic_ai.agent import Agent
+from pydantic import BaseModel, Field, Json
+from pydantic_ai import Agent, RunContext
+from pydantic_ai.messages import ModelMessage
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
+from pydantic_evals import Case, Dataset
+from pydantic_evals.evaluators import LLMJudge, OutputConfig
 
-import nest_asyncio
+from databricks.sdk import WorkspaceClient
 
+HOST = "https://dbc-603a79e2-9d02.cloud.databricks.com"
 BASE_URL = "https://dbc-603a79e2-9d02.cloud.databricks.com/serving-endpoints"
 MODEL_NAME = "databricks-meta-llama-3-3-70b-instruct"
+
 
 @dataclass
 class MapPin:
@@ -30,10 +38,18 @@ class MapState:
     pins: list[MapPin]
 
 
+@dataclass
+class Memory:
+    pass
+
+
 class PydanticChatAgent(ChatAgent):
     supervisor: Agent
+    api_key: str
 
     def __init__(self, databricks_token: str):
+
+        api_key = databricks_token
 
         PROVIDER = OpenAIProvider(
             base_url=BASE_URL,
@@ -46,16 +62,29 @@ class PydanticChatAgent(ChatAgent):
             model=MODEL,
             model_settings=ModelSettings(temperature=0.0),
             output_type=str,
+            deps_type=Memory,
             retries=3,
         )
 
-    # def prepare_message_history(self, messages: list[ChatAgentMessage]):
-    #     history_entries = []
-    #     # Assume the last message in the input is the most recent user question.
-    #     for i in range(0, len(messages) - 1, 2):
-    #         history_entries.append({"question": messages[i].content, "answer": messages[i + 1].content})
-    #     return dspy.History(messages=history_entries)
+        @self.supervisor.tool
+        async def query_genie(ctx: RunContext[Memory], inquiry: str) -> str:
 
+            w = WorkspaceClient(host=HOST, token=api_key)
+
+            space_id="01f0454e56621eba8a7c7244630a8f70"
+
+            genie_message=w.genie.start_conversation_and_wait(space_id=space_id, content=inquiry)
+
+            if genie_message.attachments:
+                first_attachment_id = genie_message.attachments[0].attachment_id
+                if first_attachment_id:
+                    result = w.genie.get_message_query_result_by_attachment(space_id=space_id, conversation_id=genie_message.conversation_id, message_id=genie_message.message_id, attachment_id=first_attachment_id)
+                    return str(result)
+                else:
+                    return "Genie response does not contain an attachment."
+            else:
+                return "Genie response does not contain any attachments."
+            
     @mlflow.trace(span_type=SpanType.AGENT)
     def predict(
         self,
@@ -63,8 +92,7 @@ class PydanticChatAgent(ChatAgent):
         context: ChatContext | None = None,
         custom_inputs: dict[str, Any] | None = None,
     ) -> ChatAgentResponse:
-        last_message = messages[-1]
-        user_prompt = last_message.content
+        user_prompt = messages[-1].content
 
         nest_asyncio.apply()
 
@@ -89,6 +117,7 @@ class PydanticChatAgent(ChatAgent):
         )
 
         return response
+
 
 AGENT = PydanticChatAgent(databricks_token=os.environ["DATABRICKS_TOKEN"])
 mlflow.models.set_model(AGENT)
