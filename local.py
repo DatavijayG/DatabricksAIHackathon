@@ -8,7 +8,7 @@ def main():
         messages=[
             ChatAgentMessage(
                 role="user",
-                content="What is the closest pet-friendly hotel to the Eiffel Tower?",
+                content="What is the closest pet-friendly hotel to the Eiffel Tower at 48.858093, 2.294694?",
             )
         ]
     )

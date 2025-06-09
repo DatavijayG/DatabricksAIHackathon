@@ -1,6 +1,6 @@
 assessments: []
-execution_time_ms: null
+execution_time_ms: 60463
 experiment_id: '0'
 request_id: 8c657db1303b44d8882347c11b43652d
-status: IN_PROGRESS
+status: OK
 timestamp_ms: 1749505345634
