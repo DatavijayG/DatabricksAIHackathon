@@ -44,7 +44,7 @@ with mlflow.start_run():
             "messages": [
                 {
                     "role": "user",
-                    "content": "What is the capital of France?",
+                    "content": "What is the closest pet-friendly hotel to the White House at 38.8977° N, 77.0365° W?",
                 }
             ]
         },
@@ -58,7 +58,7 @@ mlflow.models.predict(
             "messages": [
                 {
                     "role": "user",
-                    "content": "What is the capital of France?",
+                    "content": "What is the closest pet-friendly hotel to the White House at 38.8977° N, 77.0365° W?",
                 }
             ]
         },
