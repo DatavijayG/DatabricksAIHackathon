@@ -1,0 +1,204 @@
+/* Video Background Styles */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0; /* Behind content but visible */
+    overflow: hidden;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 0.8s ease-in-out;
+    filter: saturate(1.1) brightness(1.05);
+}
+
+.background-video.loading {
+    opacity: 0;
+}
+
+.background-video.loaded {
+    opacity: 0.6;
+}
+
+.animated-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        #667eea 0%,
+        #764ba2 25%,
+        #f093fb 50%,
+        #f5576c 75%,
+        #4facfe 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientFlow 12s ease-in-out infinite;
+    z-index: 0; /* Behind video by default */
+    opacity: 0.8; /* More visible by default */
+    transition: opacity 0.8s ease-in-out, z-index 0.3s ease;
+}
+
+.animated-background.primary {
+    z-index: 1; /* In front when video fails */
+    opacity: 1; /* Full opacity when primary */
+}
+
+.animated-background.secondary {
+    z-index: 0; /* Behind video when video works */
+    opacity: 0.8; /* More visible when secondary */
+}
+
+.gradient-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 25% 75%, rgba(139, 69, 19, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 75% 25%, rgba(255, 182, 193, 0.2) 0%, transparent 65%),
+        radial-gradient(circle at 50% 50%, rgba(135, 206, 250, 0.18) 0%, transparent 70%),
+        radial-gradient(circle at 10% 90%, rgba(221, 160, 221, 0.12) 0%, transparent 55%),
+        radial-gradient(circle at 90% 10%, rgba(255, 218, 185, 0.16) 0%, transparent 65%);
+    animation: subtleFloat 15s ease-in-out infinite;
+    opacity: 0.8;
+}
+
+/* Additional breathing layer for more depth */
+.gradient-animation::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 30% 20%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 60%, rgba(239, 68, 68, 0.09) 0%, transparent 50%);
+    animation: breathingGlow 20s ease-in-out infinite;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.15) 0%,
+        rgba(59, 130, 246, 0.1) 25%,
+        rgba(16, 185, 129, 0.08) 50%,
+        rgba(245, 158, 11, 0.1) 75%,
+        rgba(236, 72, 153, 0.12) 100%
+    );
+    backdrop-filter: blur(1px);
+    z-index: 2; /* Above everything */
+    transition: opacity 0.3s ease;
+}
+
+@keyframes gradientFlow {
+    0% { 
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 100% 50%;
+    }
+    50% { 
+        background-position: 100% 100%;
+    }
+    75% {
+        background-position: 0% 100%;
+    }
+    100% { 
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes subtleFloat {
+    0%, 100% { 
+        opacity: 0.8;
+        transform: translateY(0px) scale(1) rotate(0deg);
+    }
+    25% { 
+        opacity: 0.6;
+        transform: translateY(-10px) scale(1.02) rotate(1deg);
+    }
+    50% { 
+        opacity: 0.9;
+        transform: translateY(-5px) scale(0.98) rotate(-0.5deg);
+    }
+    75% { 
+        opacity: 0.7;
+        transform: translateY(-15px) scale(1.01) rotate(0.8deg);
+    }
+}
+
+@keyframes breathingGlow {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    33% {
+        opacity: 0.6;
+        transform: scale(1.03);
+    }
+    66% {
+        opacity: 0.4;
+        transform: scale(0.97);
+    }
+}
+
+/* Debug info for development */
+.debug-info {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 9999;
+    font-family: monospace;
+}
+
+.debug-info p {
+    margin: 2px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .background-video.loaded {
+        opacity: 0.5;
+    }
+    
+    .gradient-animation {
+        animation-duration: 20s;
+    }
+    
+    .overlay {
+        backdrop-filter: blur(0.5px);
+    }
+    
+    .debug-info {
+        top: 10px;
+        right: 10px;
+        font-size: 10px;
+        padding: 5px;
+    }
+}

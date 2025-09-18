@@ -1,0 +1,148 @@
+/* Service List Styles */
+.service-list {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.service-list h2 {
+    color: var(--kibo-color);
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.service-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.service-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.service-list::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 3px;
+}
+
+/* Service Card Styles */
+.service-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.15);
+    border-color: var(--kibo-color);
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.service-name {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.service-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.stars {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    font-size: 14px;
+}
+
+.star.filled {
+    color: #FFC107;
+}
+
+.star.half {
+    color: #FFC107;
+    opacity: 0.6;
+}
+
+.star.empty {
+    color: #E0E0E0;
+}
+
+.rating-number {
+    font-size: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.service-summary {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0 0 12px 0;
+    opacity: 0.8;
+}
+
+.service-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+}
+
+.service-cost {
+    color: var(--user-color);
+    font-weight: 600;
+}
+
+.service-insurance {
+    color: var(--kibo-color);
+    font-weight: 500;
+}
+
+.service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.service-tag {
+    background: linear-gradient(135deg, var(--kibo-color), var(--user-color));
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* No services message */
+.no-services {
+    text-align: center;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-style: italic;
+    margin-top: 50px;
+}
